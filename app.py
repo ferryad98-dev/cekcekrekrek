@@ -12,14 +12,15 @@ BASE_URL = "https://v3.apivalidasi.my.id/api/v3/validate"
 
 BANK_LIST = {
     "BRI": "002", "BCA": "014", "Mandiri": "008", "BNI": "009",
-    "BSI": "451", "BTN": "200", "CIMB Niaga": "022", "Danamon": "011",
-    "Permata": "013", "Maybank": "016", "JAGO": "542", "SEABANK": "535",
-    "JENIUS": "213", "PANIN": "019", "SINARMAS": "153"
+    "BTN": "200", "CIMB Niaga": "022", "Danamon": "011",
+    "Permata": "013", "Maybank": "016", "JAGO": "542",
+    "JENIUS": "213", "PANIN": "019", "SINARMAS": "153",
+    "BSI (ERROR)": "451", "SEABANK (ERROR)": "535"
 }
 
 EWALLET_LIST = {
     "DANA": "dana", "OVO": "ovo", "GoPay": "gopay",
-    "ShopeePay": "shopeepay", "LinkAja": "linkaja"
+    "ShopeePay": "shopeepay", "LinkAja (ERROR)": "linkaja"
 }
 
 def clean_number(raw):
