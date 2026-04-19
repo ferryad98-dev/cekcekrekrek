@@ -41,7 +41,7 @@ def validasi_api(type_val, code, account_number):
     except:
         return {"status": False, "pesan": "Error koneksi ke server"}
 
-# ================== HTML PREMIUM ==================
+# ================== HTML VERSI PREMIUM (INPUT SUDAH JELAS) ==================
 HTML = """
 <!DOCTYPE html>
 <html lang="id">
@@ -54,9 +54,6 @@ HTML = """
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
-        .logo-bank { width: 32px; height: 32px; object-fit: contain; }
-        .success-pop { animation: pop 0.4s ease; }
-        @keyframes pop { 0% { transform: scale(0.9); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
     </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 min-h-screen transition-colors">
@@ -67,44 +64,42 @@ HTML = """
         </div>
 
         <div class="flex border-b border-gray-200 dark:border-gray-700 mb-6">
-            <button onclick="switchTab(0)" id="tab0" class="flex-1 py-4 font-semibold text-lg flex items-center justify-center gap-2 border-b-4 border-indigo-600 text-indigo-600 dark:text-indigo-400">
-                🏦 Bank
-            </button>
-            <button onclick="switchTab(1)" id="tab1" class="flex-1 py-4 font-semibold text-lg flex items-center justify-center gap-2">
-                💳 E-Wallet
-            </button>
+            <button onclick="switchTab(0)" id="tab0" class="flex-1 py-4 font-semibold text-lg flex items-center justify-center gap-2 border-b-4 border-indigo-600 text-indigo-600 dark:text-indigo-400">🏦 Bank</button>
+            <button onclick="switchTab(1)" id="tab1" class="flex-1 py-4 font-semibold text-lg flex items-center justify-center gap-2">💳 E-Wallet</button>
         </div>
 
-        <!-- BANK FORM -->
+        <!-- BANK -->
         <div id="form-bank">
-            <div class="bg-white dark:bg-gray-900 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 p-2 mb-6">
+            <div class="bg-white dark:bg-gray-900 rounded-3xl shadow-sm border border-gray-200 dark:border-gray-700 p-2 mb-6">
                 <select id="bank-select" class="w-full p-5 text-lg bg-transparent focus:outline-none">
                     {% for nama, kode in bank_list.items() %}<option value="{{kode}}">{{nama}}</option>{% endfor %}
                 </select>
             </div>
-            <input id="rek-bank" type="text" placeholder="Nomor Rekening" class="w-full p-5 rounded-3xl border border-gray-200 dark:border-gray-700 focus:border-indigo-500 text-lg mb-6">
+            <input id="rek-bank" type="text" placeholder="Nomor Rekening" 
+                   class="w-full p-5 rounded-3xl border border-gray-200 dark:border-gray-700 focus:border-indigo-500 text-lg mb-6 
+                          bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
             <button onclick="cek('bank')" class="w-full bg-indigo-600 hover:bg-indigo-700 py-6 rounded-3xl text-white font-semibold text-xl flex items-center justify-center gap-3 transition">
                 <i class="fas fa-search"></i> CEK REKENING
             </button>
         </div>
 
-        <!-- EWALLET FORM -->
+        <!-- EWALLET -->
         <div id="form-ewallet" class="hidden">
-            <div class="bg-white dark:bg-gray-900 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 p-2 mb-6">
+            <div class="bg-white dark:bg-gray-900 rounded-3xl shadow-sm border border-gray-200 dark:border-gray-700 p-2 mb-6">
                 <select id="ewallet-select" class="w-full p-5 text-lg bg-transparent focus:outline-none">
                     {% for nama, kode in ewallet_list.items() %}<option value="{{kode}}">{{nama}}</option>{% endfor %}
                 </select>
             </div>
-            <input id="rek-ewallet" type="text" placeholder="Nomor HP / ID E-Wallet" class="w-full p-5 rounded-3xl border border-gray-200 dark:border-gray-700 focus:border-indigo-500 text-lg mb-6">
+            <input id="rek-ewallet" type="text" placeholder="Nomor HP / ID E-Wallet" 
+                   class="w-full p-5 rounded-3xl border border-gray-200 dark:border-gray-700 focus:border-indigo-500 text-lg mb-6 
+                          bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
             <button onclick="cek('ewallet')" class="w-full bg-indigo-600 hover:bg-indigo-700 py-6 rounded-3xl text-white font-semibold text-xl flex items-center justify-center gap-3 transition">
                 <i class="fas fa-search"></i> CEK E-WALLET
             </button>
         </div>
 
-        <!-- HASIL -->
         <div id="result" class="mt-8 hidden"></div>
 
-        <!-- RIWAYAT -->
         <div class="mt-12">
             <h3 class="font-semibold text-lg mb-4 flex items-center gap-2"><i class="fas fa-history"></i> Riwayat Cek Terakhir</h3>
             <div id="history" class="space-y-3"></div>
@@ -113,19 +108,19 @@ HTML = """
 
     <script>
         function switchTab(n) {
-            document.getElementById('tab0').classList.toggle('border-b-4', n === 0);
-            document.getElementById('tab0').classList.toggle('border-indigo-600', n === 0);
-            document.getElementById('tab0').classList.toggle('text-indigo-600', n === 0);
-            document.getElementById('tab1').classList.toggle('border-b-4', n === 1);
-            document.getElementById('tab1').classList.toggle('border-indigo-600', n === 1);
-            document.getElementById('tab1').classList.toggle('text-indigo-600', n === 1);
-            document.getElementById('form-bank').classList.toggle('hidden', n !== 0);
-            document.getElementById('form-ewallet').classList.toggle('hidden', n !== 1);
+            document.getElementById('tab0').classList.toggle('border-b-4', n===0);
+            document.getElementById('tab0').classList.toggle('border-indigo-600', n===0);
+            document.getElementById('tab0').classList.toggle('text-indigo-600', n===0);
+            document.getElementById('tab1').classList.toggle('border-b-4', n===1);
+            document.getElementById('tab1').classList.toggle('border-indigo-600', n===1);
+            document.getElementById('tab1').classList.toggle('text-indigo-600', n===1);
+            document.getElementById('form-bank').classList.toggle('hidden', n!==0);
+            document.getElementById('form-ewallet').classList.toggle('hidden', n!==1);
         }
 
         function saveToHistory(jenis, entity, nama, nomor) {
             let history = JSON.parse(localStorage.getItem('cekrek_history') || '[]');
-            history.unshift({ jenis, entity, nama, nomor, time: new Date().toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'}) });
+            history.unshift({ jenis, entity, nama, nomor, time: new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}) });
             if (history.length > 5) history.pop();
             localStorage.setItem('cekrek_history', JSON.stringify(history));
             renderHistory();
@@ -171,7 +166,7 @@ HTML = """
                 const d = data.data;
                 const label = jenis === 'bank' ? 'Bank' : 'E-Wallet';
                 resultDiv.innerHTML = `
-                <div class="bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 rounded-3xl p-8 success-pop">
+                <div class="bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 rounded-3xl p-8">
                     <div class="flex items-center gap-4 mb-6">
                         <i class="fas fa-check-circle text-5xl text-green-600"></i>
                         <div>
@@ -205,10 +200,6 @@ HTML = """
             });
         }
 
-        // Auto dark mode + render history
-        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-        }
         window.onload = () => {
             switchTab(0);
             renderHistory();
