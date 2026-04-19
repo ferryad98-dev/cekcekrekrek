@@ -123,7 +123,7 @@ HTML = """
                 <div class="bg-green-50 border border-green-300 rounded-3xl p-6">
                     <div class="flex items-center gap-3 mb-4">
                         <i class="fas fa-check-circle text-4xl text-green-600"></i>
-                        <h2 class="text-2xl font-bold text-green-700">✅ Validasi Berhasil</h2>
+                        <h2 class="text-2xl font-bold text-green-700">Validasi Berhasil</h2>
                     </div>
                     <p class="text-lg"><strong>${label} :</strong> ${entity}</p>
                     <p class="text-lg"><strong>Nama :</strong> ${d.account_name}</p>
