@@ -41,7 +41,7 @@ def validasi_api(type_val, code, account_number):
     except:
         return {"status": False, "pesan": "Error koneksi ke server"}
 
-# ================== HTML PREMIUM (DROPDOWN SUDAH JELAS) ==================
+# ================== HTML PREMIUM (DROPDOWN + INPUT SUDAH GELAP) ==================
 HTML = """
 <!DOCTYPE html>
 <html lang="id">
@@ -54,22 +54,25 @@ HTML = """
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
+        
+        /* FIX DROPDOWN DARK MODE */
         select {
-            background-color: #ffffff;
-            color: #111827;
+            background-color: #ffffff !important;
+            color: #111827 !important;
         }
         .dark select {
-            background-color: #111827;
-            color: #f3f4f6;
+            background-color: #1f2937 !important;
+            color: #f3f4f6 !important;
+            border-color: #374151 !important;
         }
         select option {
-            background-color: #ffffff;
-            color: #111827;
-            padding: 12px;
+            background-color: #ffffff !important;
+            color: #111827 !important;
+            padding: 14px 16px !important;
         }
         .dark select option {
-            background-color: #111827;
-            color: #f3f4f6;
+            background-color: #1f2937 !important;
+            color: #f3f4f6 !important;
         }
     </style>
 </head>
