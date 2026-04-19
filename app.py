@@ -41,7 +41,7 @@ def validasi_api(type_val, code, account_number):
     except:
         return {"status": False, "pesan": "Error koneksi ke server"}
 
-# ================== HTML VERSI PREMIUM (INPUT SUDAH JELAS) ==================
+# ================== HTML PREMIUM (DROPDOWN SUDAH JELAS) ==================
 HTML = """
 <!DOCTYPE html>
 <html lang="id">
@@ -54,6 +54,23 @@ HTML = """
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
+        select {
+            background-color: #ffffff;
+            color: #111827;
+        }
+        .dark select {
+            background-color: #111827;
+            color: #f3f4f6;
+        }
+        select option {
+            background-color: #ffffff;
+            color: #111827;
+            padding: 12px;
+        }
+        .dark select option {
+            background-color: #111827;
+            color: #f3f4f6;
+        }
     </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 min-h-screen transition-colors">
@@ -70,11 +87,9 @@ HTML = """
 
         <!-- BANK -->
         <div id="form-bank">
-            <div class="bg-white dark:bg-gray-900 rounded-3xl shadow-sm border border-gray-200 dark:border-gray-700 p-2 mb-6">
-                <select id="bank-select" class="w-full p-5 text-lg bg-transparent focus:outline-none">
-                    {% for nama, kode in bank_list.items() %}<option value="{{kode}}">{{nama}}</option>{% endfor %}
-                </select>
-            </div>
+            <select id="bank-select" class="w-full p-5 text-lg rounded-3xl border border-gray-200 dark:border-gray-700 focus:border-indigo-500 focus:outline-none mb-6">
+                {% for nama, kode in bank_list.items() %}<option value="{{kode}}">{{nama}}</option>{% endfor %}
+            </select>
             <input id="rek-bank" type="text" placeholder="Nomor Rekening" 
                    class="w-full p-5 rounded-3xl border border-gray-200 dark:border-gray-700 focus:border-indigo-500 text-lg mb-6 
                           bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
@@ -85,11 +100,9 @@ HTML = """
 
         <!-- EWALLET -->
         <div id="form-ewallet" class="hidden">
-            <div class="bg-white dark:bg-gray-900 rounded-3xl shadow-sm border border-gray-200 dark:border-gray-700 p-2 mb-6">
-                <select id="ewallet-select" class="w-full p-5 text-lg bg-transparent focus:outline-none">
-                    {% for nama, kode in ewallet_list.items() %}<option value="{{kode}}">{{nama}}</option>{% endfor %}
-                </select>
-            </div>
+            <select id="ewallet-select" class="w-full p-5 text-lg rounded-3xl border border-gray-200 dark:border-gray-700 focus:border-indigo-500 focus:outline-none mb-6">
+                {% for nama, kode in ewallet_list.items() %}<option value="{{kode}}">{{nama}}</option>{% endfor %}
+            </select>
             <input id="rek-ewallet" type="text" placeholder="Nomor HP / ID E-Wallet" 
                    class="w-full p-5 rounded-3xl border border-gray-200 dark:border-gray-700 focus:border-indigo-500 text-lg mb-6 
                           bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
