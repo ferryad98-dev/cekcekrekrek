@@ -34,8 +34,6 @@ def validasi_api(type_val, code, account_number):
         "accountNumber": account_number,
         "api_key": API_KEY
     }
-    
-    # Server 2 wajib untuk SEMUA E-Wallet
     if type_val == "ewallet":
         payload["server"] = "2"
 
@@ -52,7 +50,7 @@ def validasi_api(type_val, code, account_number):
     except Exception:
         return {"status": False, "pesan": "Error koneksi ke server"}
 
-# ================== HTML (Debug Page sudah dihapus) ==================
+# ================== HTML (Sudah ada nama Bank / E-Wallet) ==================
 HTML = """
 <!DOCTYPE html>
 <html lang="id">
@@ -118,12 +116,16 @@ HTML = """
 
             if (data.status === true) {
                 const d = data.data;
+                const entity = jenis === 'bank' ? (d.bank_name || 'Bank') : (d.ewallet_name || 'E-Wallet');
+                const label = jenis === 'bank' ? 'Bank' : 'E-Wallet';
+
                 resultDiv.innerHTML = `
                 <div class="bg-green-50 border border-green-300 rounded-3xl p-6">
                     <div class="flex items-center gap-3 mb-4">
                         <i class="fas fa-check-circle text-4xl text-green-600"></i>
                         <h2 class="text-2xl font-bold text-green-700">✅ Validasi Berhasil</h2>
                     </div>
+                    <p class="text-lg"><strong>${label} :</strong> ${entity}</p>
                     <p class="text-lg"><strong>Nama :</strong> ${d.account_name}</p>
                     <p class="text-lg"><strong>Nomor :</strong> ${d.account_number}</p>
                 </div>`;
