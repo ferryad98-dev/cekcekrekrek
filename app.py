@@ -35,14 +35,12 @@ def validasi_api(type_val, code, account_number):
         "api_key": API_KEY
     }
     
-    # WAJIB untuk SEMUA E-WALLET
+    # Server 2 wajib untuk SEMUA E-Wallet
     if type_val == "ewallet":
         payload["server"] = "2"
 
     try:
         r = requests.get(BASE_URL, params=payload, timeout=30)
-        print(f"📡 [{type_val.upper()} - {code}] Status: {r.status_code} | {r.text[:500]}")
-        
         if r.status_code != 200:
             try:
                 error = r.json()
@@ -50,13 +48,11 @@ def validasi_api(type_val, code, account_number):
                 return {"status": False, "pesan": pesan}
             except:
                 return {"status": False, "pesan": f"HTTP {r.status_code}"}
-        
         return r.json()
-    except Exception as e:
-        print(f"❌ Exception: {str(e)}")
+    except Exception:
         return {"status": False, "pesan": "Error koneksi ke server"}
 
-# ================== HTML ==================
+# ================== HTML (Debug Page sudah dihapus) ==================
 HTML = """
 <!DOCTYPE html>
 <html lang="id">
@@ -94,7 +90,6 @@ HTML = """
         </div>
 
         <div id="result" class="mt-8 hidden"></div>
-        <a href="/debug" class="block text-center text-xs text-gray-400 mt-8">🔧 Debug Page</a>
     </div>
 
     <script>
@@ -151,16 +146,6 @@ def validate():
     data = request.get_json()
     result = validasi_api(data.get('type'), data.get('code'), clean_number(data.get('account_number', '')))
     return jsonify(result)
-
-@app.route('/debug')
-def debug():
-    key = os.getenv("API_KEY") or "TIDAK DITEMUKAN"
-    return f"""
-    <h1>🔧 DEBUG PAGE</h1>
-    <p><strong>API_KEY terbaca?</strong> {bool(API_KEY)}</p>
-    <p><strong>Panjang:</strong> {len(key)}</p>
-    <p><a href="/">← Kembali</a></p>
-    """
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
