@@ -9,8 +9,6 @@ app = Flask(__name__)
 API_KEY = os.getenv("API_KEY")
 BASE_URL = "https://v3.apivalidasi.my.id/api/v3/validate"
 
-print(f"🔥 API_KEY loaded: {bool(API_KEY)}")
-
 BANK_LIST = {
     "BRI": "002", "BCA": "014", "Mandiri": "008", "BNI": "009",
     "BSI": "451", "BTN": "200", "CIMB Niaga": "022", "Danamon": "011",
@@ -37,13 +35,13 @@ def validasi_api(type_val, code, account_number):
         "api_key": API_KEY
     }
     
-    # FIX E-WALLET: tambah server=2
-    if type_val == "ewallet":
+    # HANYA DANA yang butuh server=2
+    if type_val == "ewallet" and code == "dana":
         payload["server"] = "2"
 
     try:
         r = requests.get(BASE_URL, params=payload, timeout=30)
-        print(f"📡 [{type_val.upper()}] Status: {r.status_code} | {r.text[:400]}")
+        print(f"📡 [{type_val.upper()} - {code}] Status: {r.status_code} | {r.text[:500]}")
         
         if r.status_code != 200:
             try:
@@ -58,7 +56,7 @@ def validasi_api(type_val, code, account_number):
         print(f"❌ Exception: {str(e)}")
         return {"status": False, "pesan": "Error koneksi ke server"}
 
-# ================== HTML (sudah dipercantik) ==================
+# ================== HTML ==================
 HTML = """
 <!DOCTYPE html>
 <html lang="id">
@@ -79,7 +77,6 @@ HTML = """
             <button onclick="switchTab(1)" id="tab1" class="flex-1 py-4 font-semibold text-lg">💳 E-Wallet</button>
         </div>
 
-        <!-- BANK -->
         <div id="form-bank">
             <select id="bank-select" class="w-full p-4 rounded-2xl border border-gray-300 focus:outline-none focus:border-indigo-500 text-lg mb-4">
                 {% for nama, kode in bank_list.items() %}<option value="{{kode}}">{{nama}}</option>{% endfor %}
@@ -88,7 +85,6 @@ HTML = """
             <button onclick="cek('bank')" class="w-full mt-6 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-5 rounded-2xl text-xl transition">CEK REKENING</button>
         </div>
 
-        <!-- EWALLET -->
         <div id="form-ewallet" class="hidden">
             <select id="ewallet-select" class="w-full p-4 rounded-2xl border border-gray-300 focus:outline-none focus:border-indigo-500 text-lg mb-4">
                 {% for nama, kode in ewallet_list.items() %}<option value="{{kode}}">{{nama}}</option>{% endfor %}
@@ -131,7 +127,7 @@ HTML = """
                 <div class="bg-green-50 border border-green-300 rounded-3xl p-6">
                     <div class="flex items-center gap-3 mb-4">
                         <i class="fas fa-check-circle text-4xl text-green-600"></i>
-                        <h2 class="text-2xl font-bold text-green-700">Validasi Berhasil</h2>
+                        <h2 class="text-2xl font-bold text-green-700">✅ Validasi Berhasil</h2>
                     </div>
                     <p class="text-lg"><strong>Nama :</strong> ${d.account_name}</p>
                     <p class="text-lg"><strong>Nomor :</strong> ${d.account_number}</p>
