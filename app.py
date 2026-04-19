@@ -64,7 +64,7 @@ def validasi_api(type_val, code, account_number):
                 continue
             return {"status": False, "pesan": "Error koneksi ke server validasi"}
     
-    return {"status": False, "pesan": "Validasi Gagal atau Layanan tidak tersedia"}
+    return {"status": False, "pesan": "COBA 2X BARU BISA (Validasi Gagal atau Layanan tidak tersedia)"}
 
 # ================== HTML (Kamu sudah bagus, tetap pakai yang ini) ==================
 HTML = """
