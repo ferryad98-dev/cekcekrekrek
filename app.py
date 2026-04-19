@@ -1,5 +1,6 @@
 import os
 import requests
+import time
 from flask import Flask, request, jsonify, render_template_string
 from dotenv import load_dotenv
 
@@ -27,21 +28,44 @@ def clean_number(raw):
     nomor = nomor.replace("_", "").replace("/", "").replace("\\", "")
     return nomor
 
+# ================== AUTO RETRY (Fix error pertama) ==================
 def validasi_api(type_val, code, account_number):
-    payload = {"type": type_val, "code": code, "accountNumber": account_number, "api_key": API_KEY}
+    payload = {
+        "type": type_val,
+        "code": code,
+        "accountNumber": account_number,
+        "api_key": API_KEY
+    }
     if type_val == "ewallet":
         payload["server"] = "2"
-    try:
-        r = requests.get(BASE_URL, params=payload, timeout=30)
-        if r.status_code != 200:
+
+    for attempt in range(2):   # coba maksimal 2 kali
+        try:
+            r = requests.get(BASE_URL, params=payload, timeout=25)
+            
+            if r.status_code == 200:
+                return r.json()
+            
             error = r.json()
             pesan = error.get("data", {}).get("pesan") or error.get("pesan") or "Gagal validasi"
+            
+            if "SERVICE_UNAVAILABLE" in pesan.upper() or "unavailable" in pesan.lower():
+                if attempt == 0:
+                    time.sleep(0.8)   # tunggu sebentar lalu coba lagi
+                    continue
+                return {"status": False, "pesan": "Bank/E-Wallet sedang sibuk. Coba lagi sebentar."}
+            
             return {"status": False, "pesan": pesan}
-        return r.json()
-    except:
-        return {"status": False, "pesan": "Error koneksi ke server"}
+            
+        except:
+            if attempt == 0:
+                time.sleep(0.8)
+                continue
+            return {"status": False, "pesan": "Error koneksi ke server validasi"}
+    
+    return {"status": False, "pesan": "Validasi Gagal atau Layanan tidak tersedia"}
 
-# ================== HTML SUPER PREMIUM (SUDAH DIPERBAIKI) ==================
+# ================== HTML (Kamu sudah bagus, tetap pakai yang ini) ==================
 HTML = """
 <!DOCTYPE html>
 <html lang="id">
