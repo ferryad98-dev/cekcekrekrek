@@ -35,8 +35,8 @@ def validasi_api(type_val, code, account_number):
         "api_key": API_KEY
     }
     
-    # HANYA DANA yang butuh server=2
-    if type_val == "ewallet" and code == "dana":
+    # WAJIB untuk SEMUA E-WALLET
+    if type_val == "ewallet":
         payload["server"] = "2"
 
     try:
