@@ -51,7 +51,7 @@ def validasi_api(type_val, code, account_number):
     
     return {"status": False, "pesan": "Validasi Gagal atau Layanan tidak tersedia"}
 
-# ================== HTML DENGAN PESAN ERROR YANG DIPERBARUI ==================
+# ================== HTML LENGKAP & RAPI ==================
 HTML = """
 <!DOCTYPE html>
 <html lang="id">
@@ -64,6 +64,33 @@ HTML = """
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
+
+        .loading-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(255,255,255,0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            border-radius: 1.5rem;
+            z-index: 20;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .dark .loading-overlay {
+            background: rgba(15, 23, 42, 0.95);
+        }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #e5e7eb;
+            border-top: 5px solid #6366f1;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-slate-50 to-indigo-50 dark:from-slate-950 dark:to-slate-900 min-h-screen text-gray-900 dark:text-gray-100">
@@ -81,6 +108,7 @@ HTML = """
             <button onclick="switchTab(1)" id="tab1" class="flex-1 py-5 text-lg font-semibold rounded-3xl transition-all flex items-center justify-center gap-3">💳 E-Wallet</button>
         </div>
 
+        <!-- Form Bank -->
         <div id="form-bank" class="relative">
             <div class="bg-white dark:bg-slate-800 rounded-3xl p-10 shadow-2xl border border-white/70 dark:border-slate-700">
                 <select id="bank-select" class="w-full p-6 text-lg rounded-2xl border border-slate-200 dark:border-slate-600 focus:border-indigo-500 mb-6"></select>
@@ -91,14 +119,13 @@ HTML = """
                 <button onclick="cek('bank')" 
                         class="mt-10 w-full py-7 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-semibold text-xl flex items-center justify-center gap-3 transition-all">🔎 CEK REKENING</button>
             </div>
-            <div id="loading-bank" class="loading-overlay hidden">
-                <div class="flex flex-col items-center">
-                    <div class="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
-                    <p class="mt-4 text-slate-600 dark:text-slate-400 font-medium">Sedang memvalidasi...</p>
-                </div>
+            <div id="loading-bank" class="loading-overlay">
+                <div class="spinner"></div>
+                <p class="text-slate-600 dark:text-slate-400 font-medium text-lg">Sedang memvalidasi...</p>
             </div>
         </div>
 
+        <!-- Form E-Wallet -->
         <div id="form-ewallet" class="relative hidden">
             <div class="bg-white dark:bg-slate-800 rounded-3xl p-10 shadow-2xl border border-white/70 dark:border-slate-700">
                 <select id="ewallet-select" class="w-full p-6 text-lg rounded-2xl border border-slate-200 dark:border-slate-600 focus:border-indigo-500 mb-6"></select>
@@ -109,11 +136,9 @@ HTML = """
                 <button onclick="cek('ewallet')" 
                         class="mt-10 w-full py-7 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-semibold text-xl flex items-center justify-center gap-3 transition-all">🔎 CEK E-WALLET</button>
             </div>
-            <div id="loading-ewallet" class="loading-overlay hidden">
-                <div class="flex flex-col items-center">
-                    <div class="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
-                    <p class="mt-4 text-slate-600 dark:text-slate-400 font-medium">Sedang memvalidasi...</p>
-                </div>
+            <div id="loading-ewallet" class="loading-overlay">
+                <div class="spinner"></div>
+                <p class="text-slate-600 dark:text-slate-400 font-medium text-lg">Sedang memvalidasi...</p>
             </div>
         </div>
 
@@ -203,12 +228,10 @@ HTML = """
                 saveToHistory(jenis, entityName, d.account_name, d.account_number);
             } else {
                 let pesan = data.pesan || "Terjadi kesalahan";
-                if (pesan.includes("Validasi Gagal atau Layanan tidak tersedia") || pesan.includes("Gagal validasi")) {
-                    pesan = `
-                        Validasi Gagal atau Layanan tidak tersedia<br>
-                        Coba cek lagi, kalau masih gagal, langsung ke GRUP FD aja ya 🙂<br><br>
-                        <span class="text-rose-600 dark:text-rose-400 font-bold italic">*PASTIKAN JENIS REKENINGNYA SUDAH SESUAI*</span>
-                    `;
+                if (pesan.includes("Validasi Gagal atau Layanan tidak tersedia")) {
+                    pesan = `Validasi Gagal atau Layanan tidak tersedia<br>
+                             Coba cek lagi, kalau masih gagal, langsung ke GRUP FD aja ya 🙂<br><br>
+                             <span class="text-rose-600 dark:text-rose-400 font-bold italic">*PASTIKAN JENIS REKENINGNYA SUDAH SESUAI*</span>`;
                 }
                 resultDiv.innerHTML = `<div class="bg-red-50 dark:bg-red-950 text-red-600 dark:text-red-400 p-14 rounded-3xl text-center text-xl">${pesan}</div>`;
             }
