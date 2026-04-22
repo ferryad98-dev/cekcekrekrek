@@ -24,9 +24,6 @@ EWALLET_LIST = {
 
 def clean_number(raw):
     nomor = raw.strip()
-    nomor = nomor.replace("-", "").replace(" ", "").replace(".", "").replace(",", "")
-    nomor = nomor.replace("_", "").replace("/", "").replace("\\", "")
-    # Hanya ambil angka
     nomor = ''.join(filter(str.isdigit, nomor))
     return nomor
 
@@ -54,7 +51,7 @@ def validasi_api(type_val, code, account_number):
     
     return {"status": False, "pesan": "Validasi Gagal atau Layanan tidak tersedia"}
 
-# ================== HTML DENGAN FILTER ANGKA ==================
+# ================== HTML UI LEBIH ELEGANT ==================
 HTML = """
 <!DOCTYPE html>
 <html lang="id">
@@ -65,70 +62,94 @@ HTML = """
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap');
         body { font-family: 'Inter', sans-serif; }
+        .title { font-family: 'Playfair Display', serif; }
+        .glass {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+        }
+        .dark .glass {
+            background: rgba(15, 23, 42, 0.85);
+        }
     </style>
 </head>
-<body class="bg-gradient-to-br from-slate-50 to-indigo-50 dark:from-slate-950 dark:to-slate-900 min-h-screen text-gray-900 dark:text-gray-100">
-    <div class="max-w-2xl mx-auto pt-12 px-5">
-        <div class="text-center mb-12">
-            <h1 class="text-6xl font-bold tracking-tighter bg-gradient-to-r from-indigo-600 via-purple-600 to-violet-600 bg-clip-text text-transparent">CEK CEK REK</h1>
-            <p class="mt-3 text-lg text-gray-600 dark:text-gray-400">Validasi rekening & e-wallet dengan cepat dan aman</p>
+<body class="bg-gradient-to-br from-zinc-100 to-slate-200 dark:from-zinc-950 dark:to-slate-900 min-h-screen">
+    <div class="max-w-2xl mx-auto pt-16 px-6">
+        <!-- Header -->
+        <div class="text-center mb-14">
+            <h1 class="title text-7xl font-bold tracking-tighter bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600 bg-clip-text text-transparent">
+                CEK CEK REK
+            </h1>
+            <p class="mt-4 text-xl text-slate-600 dark:text-slate-400">Validasi rekening & e-wallet cepat, aman, dan akurat</p>
         </div>
 
-        <div class="flex bg-white dark:bg-slate-800 rounded-3xl p-1.5 shadow-xl mb-10">
-            <button onclick="switchTab(0)" id="tab0" class="flex-1 py-4 text-lg font-semibold rounded-3xl transition-all flex items-center justify-center gap-2">🏦 Bank</button>
-            <button onclick="switchTab(1)" id="tab1" class="flex-1 py-4 text-lg font-semibold rounded-3xl transition-all flex items-center justify-center gap-2">💳 E-Wallet</button>
+        <!-- Tabs -->
+        <div class="flex bg-white dark:bg-slate-800 rounded-3xl p-2 shadow-xl mb-12">
+            <button onclick="switchTab(0)" id="tab0" 
+                    class="flex-1 py-5 text-lg font-semibold rounded-3xl transition-all flex items-center justify-center gap-3">🏦 Bank</button>
+            <button onclick="switchTab(1)" id="tab1" 
+                    class="flex-1 py-5 text-lg font-semibold rounded-3xl transition-all flex items-center justify-center gap-3">💳 E-Wallet</button>
         </div>
 
-        <div id="form-bank">
-            <div class="bg-white dark:bg-slate-800 rounded-3xl p-8 shadow-2xl">
-                <select id="bank-select" class="w-full p-6 text-lg rounded-2xl border border-gray-200 dark:border-slate-700 focus:border-indigo-500 focus:outline-none mb-6"></select>
+        <!-- Form Bank -->
+        <div id="form-bank" class="tab-content">
+            <div class="glass rounded-3xl p-10 shadow-2xl border border-white/60 dark:border-slate-700">
+                <select id="bank-select" class="w-full p-6 text-lg rounded-2xl border border-slate-200 dark:border-slate-600 focus:border-indigo-500 mb-6"></select>
                 <input id="rek-bank" type="text" placeholder="Nomor Rekening" maxlength="20"
-                       class="w-full p-6 text-lg rounded-2xl border border-gray-200 dark:border-slate-700 focus:border-indigo-500" 
+                       class="w-full p-6 text-lg rounded-2xl border border-slate-200 dark:border-slate-600 focus:border-indigo-500" 
                        oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                <button onclick="cek('bank')" class="mt-8 w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 py-7 rounded-2xl text-white font-semibold text-xl flex items-center justify-center gap-3 transition-all">🔎 CEK REKENING</button>
+                <button onclick="cek('bank')" 
+                        class="mt-10 w-full py-7 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-semibold text-xl flex items-center justify-center gap-3 hover:brightness-110 transition-all">
+                    <i class="fas fa-search"></i> CEK REKENING
+                </button>
             </div>
         </div>
 
-        <div id="form-ewallet" class="hidden">
-            <div class="bg-white dark:bg-slate-800 rounded-3xl p-8 shadow-2xl">
-                <select id="ewallet-select" class="w-full p-6 text-lg rounded-2xl border border-gray-200 dark:border-slate-700 focus:border-indigo-500 focus:outline-none mb-6"></select>
+        <!-- Form E-Wallet -->
+        <div id="form-ewallet" class="tab-content hidden">
+            <div class="glass rounded-3xl p-10 shadow-2xl border border-white/60 dark:border-slate-700">
+                <select id="ewallet-select" class="w-full p-6 text-lg rounded-2xl border border-slate-200 dark:border-slate-600 focus:border-indigo-500 mb-6"></select>
                 <input id="rek-ewallet" type="text" placeholder="Nomor HP / ID E-Wallet" maxlength="20"
-                       class="w-full p-6 text-lg rounded-2xl border border-gray-200 dark:border-slate-700 focus:border-indigo-500" 
+                       class="w-full p-6 text-lg rounded-2xl border border-slate-200 dark:border-slate-600 focus:border-indigo-500" 
                        oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                <button onclick="cek('ewallet')" class="mt-8 w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 py-7 rounded-2xl text-white font-semibold text-xl flex items-center justify-center gap-3 transition-all">🔎 CEK E-WALLET</button>
+                <button onclick="cek('ewallet')" 
+                        class="mt-10 w-full py-7 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-semibold text-xl flex items-center justify-center gap-3 hover:brightness-110 transition-all">
+                    <i class="fas fa-search"></i> CEK E-WALLET
+                </button>
             </div>
         </div>
 
-        <div id="result" class="mt-10 hidden"></div>
+        <div id="result" class="mt-12 hidden"></div>
 
-        <div class="mt-16">
-            <h3 class="font-semibold text-xl mb-6 flex items-center gap-3"><i class="fas fa-clock-rotate-left"></i> Riwayat Cek Terakhir</h3>
+        <div class="mt-20">
+            <h3 class="font-semibold text-xl mb-6 flex items-center gap-3 text-slate-700 dark:text-slate-300">
+                <i class="fas fa-history"></i> Riwayat Cek Terakhir
+            </h3>
             <div id="history" class="space-y-4"></div>
         </div>
     </div>
 
     <script>
-        // Isi dropdown
-        const bankSelect = document.getElementById('bank-select');
-        const ewalletSelect = document.getElementById('ewallet-select');
+        // Dropdown
         {% for nama, kode in bank_list.items() %}
-            bankSelect.innerHTML += `<option value="{{kode}}">{{nama}}</option>`;
+            document.getElementById('bank-select').innerHTML += `<option value="{{kode}}">{{nama}}</option>`;
         {% endfor %}
         {% for nama, kode in ewallet_list.items() %}
-            ewalletSelect.innerHTML += `<option value="{{kode}}">{{nama}}</option>`;
+            document.getElementById('ewallet-select').innerHTML += `<option value="{{kode}}">{{nama}}</option>`;
         {% endfor %}
 
         function switchTab(n) {
-            document.getElementById('tab0').classList.toggle('bg-white', n===0);
-            document.getElementById('tab0').classList.toggle('shadow', n===0);
-            document.getElementById('tab1').classList.toggle('bg-white', n===1);
-            document.getElementById('tab1').classList.toggle('shadow', n===1);
-            document.getElementById('form-bank').classList.toggle('hidden', n!==0);
-            document.getElementById('form-ewallet').classList.toggle('hidden', n!==1);
+            document.getElementById('tab0').classList.toggle('bg-white', n === 0);
+            document.getElementById('tab0').classList.toggle('shadow-md', n === 0);
+            document.getElementById('tab1').classList.toggle('bg-white', n === 1);
+            document.getElementById('tab1').classList.toggle('shadow-md', n === 1);
+            
+            document.getElementById('form-bank').classList.toggle('hidden', n !== 0);
+            document.getElementById('form-ewallet').classList.toggle('hidden', n !== 1);
         }
 
+        // History functions (sama seperti sebelumnya)
         function saveToHistory(jenis, entity, nama, nomor) {
             let history = JSON.parse(localStorage.getItem('cekrek_history') || '[]');
             history.unshift({ jenis, entity, nama, nomor, time: new Date().toLocaleTimeString('id-ID',{hour:'2-digit', minute:'2-digit'}) });
@@ -141,18 +162,18 @@ HTML = """
             const div = document.getElementById('history');
             const history = JSON.parse(localStorage.getItem('cekrek_history') || '[]');
             if (history.length === 0) {
-                div.innerHTML = `<p class="text-center text-gray-400 py-10">Belum ada riwayat cek</p>`;
+                div.innerHTML = `<p class="text-center text-slate-400 py-12">Belum ada riwayat</p>`;
                 return;
             }
             div.innerHTML = history.map(h => `
-                <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-gray-100 dark:border-slate-700">
+                <div class="glass rounded-2xl p-6 border border-white/50 dark:border-slate-700">
                     <div class="flex justify-between">
                         <div>
-                            <span class="text-xs uppercase tracking-widest text-indigo-600">${h.jenis} • ${h.entity}</span>
-                            <p class="font-semibold mt-2">${h.nama}</p>
-                            <p class="text-sm text-gray-500">${h.nomor}</p>
+                            <span class="text-xs uppercase tracking-widest text-indigo-500">${h.jenis} • ${h.entity}</span>
+                            <p class="font-medium mt-2">${h.nama}</p>
+                            <p class="text-slate-500">${h.nomor}</p>
                         </div>
-                        <span class="text-xs text-gray-400">${h.time}</span>
+                        <span class="text-xs text-slate-400">${h.time}</span>
                     </div>
                 </div>
             `).join('');
@@ -161,7 +182,7 @@ HTML = """
         async function cek(jenis) {
             const resultDiv = document.getElementById('result');
             resultDiv.classList.remove('hidden');
-            resultDiv.innerHTML = `<div class="text-center py-20"><i class="fas fa-spinner fa-spin text-6xl text-indigo-500"></i><p class="mt-8 text-xl">Memvalidasi data...</p></div>`;
+            resultDiv.innerHTML = `<div class="text-center py-24"><i class="fas fa-spinner fa-spin text-6xl text-indigo-500"></i><p class="mt-8 text-xl">Sedang memvalidasi...</p></div>`;
 
             let code = jenis === 'bank' ? document.getElementById('bank-select').value : document.getElementById('ewallet-select').value;
             let account_number = (jenis === 'bank' ? document.getElementById('rek-bank') : document.getElementById('rek-ewallet')).value.trim();
@@ -179,34 +200,34 @@ HTML = """
                 const d = data.data;
                 const label = jenis === 'bank' ? 'Bank' : 'E-Wallet';
                 resultDiv.innerHTML = `
-                <div class="bg-white dark:bg-slate-800 rounded-3xl p-10 shadow-2xl border border-gray-100 dark:border-slate-700">
-                    <div class="flex items-center gap-6 mb-8">
-                        <div class="w-16 h-16 bg-emerald-100 dark:bg-emerald-900/50 rounded-2xl flex items-center justify-center">
-                            <i class="fas fa-check-circle text-5xl text-emerald-500"></i>
+                <div class="glass rounded-3xl p-10 shadow-2xl border border-white/60 dark:border-slate-700">
+                    <div class="flex gap-6 mb-10">
+                        <div class="flex-shrink-0 w-20 h-20 bg-emerald-100 dark:bg-emerald-900 rounded-3xl flex items-center justify-center">
+                            <i class="fas fa-check-circle text-6xl text-emerald-500"></i>
                         </div>
-                        <div>
-                            <h2 class="text-3xl font-bold text-emerald-700 dark:text-emerald-400">Validasi Berhasil</h2>
-                            <p class="text-emerald-600 dark:text-emerald-300">${label} • ${entityName}</p>
+                        <div class="pt-2">
+                            <h2 class="text-4xl font-bold text-emerald-700 dark:text-emerald-400">Validasi Berhasil</h2>
+                            <p class="text-emerald-600 dark:text-emerald-300 text-lg">${label} • ${entityName}</p>
                         </div>
                     </div>
-                    <div class="space-y-6">
-                        <div class="flex justify-between items-center py-3 border-b border-gray-100 dark:border-slate-700">
-                            <span class="text-gray-500">Nama</span>
-                            <span class="font-semibold">${d.account_name}</span>
+                    <div class="grid grid-cols-1 gap-8 text-lg">
+                        <div class="flex justify-between border-b border-slate-200 dark:border-slate-700 pb-5">
+                            <span class="text-slate-500">Nama</span>
+                            <span class="font-semibold text-right">${d.account_name}</span>
                         </div>
-                        <div class="flex justify-between items-center py-3">
-                            <span class="text-gray-500">Nomor</span>
-                            <span class="font-semibold">${d.account_number}</span>
+                        <div class="flex justify-between">
+                            <span class="text-slate-500">Nomor</span>
+                            <span class="font-semibold text-right">${d.account_number}</span>
                         </div>
                     </div>
                     <button onclick="copyToClipboard('${d.account_name}')" 
-                            class="mt-10 w-full py-6 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-semibold flex items-center justify-center gap-3 transition-all">
+                            class="mt-12 w-full py-7 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-lg flex items-center justify-center gap-3 transition-all">
                         <i class="fas fa-copy"></i> Copy Nama
                     </button>
                 </div>`;
                 saveToHistory(jenis, entityName, d.account_name, d.account_number);
             } else {
-                resultDiv.innerHTML = `<div class="bg-red-50 dark:bg-red-950 text-red-600 dark:text-red-400 p-12 rounded-3xl text-center text-xl">${data.pesan}</div>`;
+                resultDiv.innerHTML = `<div class="glass rounded-3xl p-14 text-center text-red-500 text-xl">${data.pesan}</div>`;
             }
         }
 
@@ -216,7 +237,7 @@ HTML = """
                 for (let b of btns) if (b.textContent.includes('Copy')) {
                     const original = b.innerHTML;
                     b.innerHTML = '✅ Tersalin!';
-                    setTimeout(() => { b.innerHTML = original; }, 2000);
+                    setTimeout(() => b.innerHTML = original, 1800);
                 }
             });
         }
