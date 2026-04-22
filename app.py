@@ -52,7 +52,7 @@ def validasi_api(type_val, code, account_number):
     
     return {"status": False, "pesan": "Validasi Gagal atau Layanan tidak tersedia"}
 
-# ================== HTML DENGAN ANIMASI SMOOTH ==================
+# ================== HTML DENGAN HASIL VALIDASI YANG DIRAPIKAN ==================
 HTML = """
 <!DOCTYPE html>
 <html lang="id">
@@ -65,28 +65,6 @@ HTML = """
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
-        
-        .tab-content {
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            opacity: 1;
-            transform: translateY(0);
-        }
-        .tab-content.hidden {
-            opacity: 0;
-            transform: translateY(20px);
-            pointer-events: none;
-        }
-        
-        .form-card {
-            transition: all 0.5s cubic-bezier(0.4, 0.0, 0.2, 1);
-        }
-        
-        select, input {
-            transition: all 0.3s ease;
-        }
-        select:focus, input:focus {
-            box-shadow: 0 0 0 4px rgba(129, 140, 248, 0.3);
-        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-slate-50 to-indigo-50 dark:from-slate-950 dark:to-slate-900 min-h-screen text-gray-900 dark:text-gray-100">
@@ -96,16 +74,12 @@ HTML = """
             <p class="mt-3 text-lg text-gray-600 dark:text-gray-400">Validasi rekening & e-wallet dengan cepat dan aman</p>
         </div>
 
-        <!-- Tabs -->
         <div class="flex bg-white dark:bg-slate-800 rounded-3xl p-1.5 shadow-xl mb-10">
-            <button onclick="switchTab(0)" id="tab0" 
-                    class="flex-1 py-4 text-lg font-semibold rounded-3xl transition-all flex items-center justify-center gap-2">🏦 Bank</button>
-            <button onclick="switchTab(1)" id="tab1" 
-                    class="flex-1 py-4 text-lg font-semibold rounded-3xl transition-all flex items-center justify-center gap-2">💳 E-Wallet</button>
+            <button onclick="switchTab(0)" id="tab0" class="flex-1 py-4 text-lg font-semibold rounded-3xl transition-all flex items-center justify-center gap-2">🏦 Bank</button>
+            <button onclick="switchTab(1)" id="tab1" class="flex-1 py-4 text-lg font-semibold rounded-3xl transition-all flex items-center justify-center gap-2">💳 E-Wallet</button>
         </div>
 
-        <!-- Form Bank -->
-        <div id="form-bank" class="tab-content form-card">
+        <div id="form-bank">
             <div class="bg-white dark:bg-slate-800 rounded-3xl p-8 shadow-2xl">
                 <select id="bank-select" class="w-full p-6 text-lg rounded-2xl border border-gray-200 dark:border-slate-700 focus:border-indigo-500 focus:outline-none mb-6"></select>
                 <input id="rek-bank" type="text" placeholder="Nomor Rekening" class="w-full p-6 text-lg rounded-2xl border border-gray-200 dark:border-slate-700 focus:border-indigo-500">
@@ -113,8 +87,7 @@ HTML = """
             </div>
         </div>
 
-        <!-- Form E-Wallet -->
-        <div id="form-ewallet" class="tab-content form-card hidden">
+        <div id="form-ewallet" class="hidden">
             <div class="bg-white dark:bg-slate-800 rounded-3xl p-8 shadow-2xl">
                 <select id="ewallet-select" class="w-full p-6 text-lg rounded-2xl border border-gray-200 dark:border-slate-700 focus:border-indigo-500 focus:outline-none mb-6"></select>
                 <input id="rek-ewallet" type="text" placeholder="Nomor HP / ID E-Wallet" class="w-full p-6 text-lg rounded-2xl border border-gray-200 dark:border-slate-700 focus:border-indigo-500">
@@ -142,25 +115,14 @@ HTML = """
         {% endfor %}
 
         function switchTab(n) {
-            const bankForm = document.getElementById('form-bank');
-            const ewalletForm = document.getElementById('form-ewallet');
-            
-            if (n === 0) {
-                bankForm.classList.remove('hidden');
-                ewalletForm.classList.add('hidden');
-            } else {
-                ewalletForm.classList.remove('hidden');
-                bankForm.classList.add('hidden');
-            }
-            
-            // Update active tab
             document.getElementById('tab0').classList.toggle('bg-white', n===0);
             document.getElementById('tab0').classList.toggle('shadow', n===0);
             document.getElementById('tab1').classList.toggle('bg-white', n===1);
             document.getElementById('tab1').classList.toggle('shadow', n===1);
+            document.getElementById('form-bank').classList.toggle('hidden', n!==0);
+            document.getElementById('form-ewallet').classList.toggle('hidden', n!==1);
         }
 
-        // Fungsi saveToHistory, renderHistory, cek(), copyToClipboard tetap sama seperti sebelumnya
         function saveToHistory(jenis, entity, nama, nomor) {
             let history = JSON.parse(localStorage.getItem('cekrek_history') || '[]');
             history.unshift({ jenis, entity, nama, nomor, time: new Date().toLocaleTimeString('id-ID',{hour:'2-digit', minute:'2-digit'}) });
@@ -178,7 +140,7 @@ HTML = """
             }
             div.innerHTML = history.map(h => `
                 <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-gray-100 dark:border-slate-700">
-                    <div class="flex justify-between items-start">
+                    <div class="flex justify-between">
                         <div>
                             <span class="text-xs uppercase tracking-widest text-indigo-600">${h.jenis} • ${h.entity}</span>
                             <p class="font-semibold mt-2">${h.nama}</p>
@@ -212,18 +174,31 @@ HTML = """
                 const label = jenis === 'bank' ? 'Bank' : 'E-Wallet';
                 resultDiv.innerHTML = `
                 <div class="bg-white dark:bg-slate-800 rounded-3xl p-10 shadow-2xl border border-gray-100 dark:border-slate-700">
-                    <div class="flex gap-6">
-                        <i class="fas fa-circle-check text-7xl text-emerald-500"></i>
+                    <div class="flex items-center gap-6 mb-8">
+                        <div class="w-16 h-16 bg-emerald-100 dark:bg-emerald-900/50 rounded-2xl flex items-center justify-center">
+                            <i class="fas fa-check-circle text-5xl text-emerald-500"></i>
+                        </div>
                         <div>
-                            <h2 class="text-4xl font-bold text-emerald-700 dark:text-emerald-400">Validasi Berhasil</h2>
+                            <h2 class="text-3xl font-bold text-emerald-700 dark:text-emerald-400">Validasi Berhasil</h2>
                             <p class="text-emerald-600 dark:text-emerald-300">${label} • ${entityName}</p>
-                            <div class="mt-10 space-y-6">
-                                <div class="flex justify-between text-lg"><span class="text-gray-500">Nama</span><span class="font-semibold">${d.account_name}</span></div>
-                                <div class="flex justify-between text-lg"><span class="text-gray-500">Nomor</span><span class="font-semibold">${d.account_number}</span></div>
-                            </div>
-                            <button onclick="copyToClipboard('${d.account_name}')" class="mt-12 w-full py-6 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-medium flex items-center justify-center gap-3">📋 Copy Nama</button>
                         </div>
                     </div>
+                    
+                    <div class="space-y-6">
+                        <div class="flex justify-between items-center py-3 border-b border-gray-100 dark:border-slate-700">
+                            <span class="text-gray-500">Nama</span>
+                            <span class="font-semibold text-right">${d.account_name}</span>
+                        </div>
+                        <div class="flex justify-between items-center py-3">
+                            <span class="text-gray-500">Nomor</span>
+                            <span class="font-semibold text-right">${d.account_number}</span>
+                        </div>
+                    </div>
+
+                    <button onclick="copyToClipboard('${d.account_name}')" 
+                            class="mt-10 w-full py-6 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-semibold flex items-center justify-center gap-3 transition-all">
+                        <i class="fas fa-copy"></i> Copy Nama
+                    </button>
                 </div>`;
                 saveToHistory(jenis, entityName, d.account_name, d.account_number);
             } else {
@@ -237,7 +212,7 @@ HTML = """
                 for (let b of btns) if (b.textContent.includes('Copy')) {
                     const original = b.innerHTML;
                     b.innerHTML = '✅ Tersalin!';
-                    setTimeout(() => b.innerHTML = original, 2000);
+                    setTimeout(() => { b.innerHTML = original; }, 2000);
                 }
             });
         }
