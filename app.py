@@ -51,7 +51,7 @@ def validasi_api(type_val, code, account_number):
     
     return {"status": False, "pesan": "Validasi Gagal atau Layanan tidak tersedia"}
 
-# ================== HTML DENGAN FITUR ENTER ==================
+# ================== HTML DENGAN PESAN ERROR YANG DITINGKATKAN ==================
 HTML = """
 <!DOCTYPE html>
 <html lang="id">
@@ -81,7 +81,6 @@ HTML = """
             <button onclick="switchTab(1)" id="tab1" class="flex-1 py-5 text-lg font-semibold rounded-3xl transition-all flex items-center justify-center gap-3">💳 E-Wallet</button>
         </div>
 
-        <!-- Form Bank -->
         <div id="form-bank" class="relative">
             <div class="bg-white dark:bg-slate-800 rounded-3xl p-10 shadow-2xl border border-white/70 dark:border-slate-700">
                 <select id="bank-select" class="w-full p-6 text-lg rounded-2xl border border-slate-200 dark:border-slate-600 focus:border-indigo-500 mb-6"></select>
@@ -100,7 +99,6 @@ HTML = """
             </div>
         </div>
 
-        <!-- Form E-Wallet -->
         <div id="form-ewallet" class="relative hidden">
             <div class="bg-white dark:bg-slate-800 rounded-3xl p-10 shadow-2xl border border-white/70 dark:border-slate-700">
                 <select id="ewallet-select" class="w-full p-6 text-lg rounded-2xl border border-slate-200 dark:border-slate-600 focus:border-indigo-500 mb-6"></select>
@@ -204,7 +202,11 @@ HTML = """
                 </div>`;
                 saveToHistory(jenis, entityName, d.account_name, d.account_number);
             } else {
-                resultDiv.innerHTML = `<div class="bg-red-50 dark:bg-red-950 text-red-600 dark:text-red-400 p-14 rounded-3xl text-center text-xl">${data.pesan}</div>`;
+                let pesan = data.pesan;
+                if (pesan.includes("Validasi Gagal atau Layanan tidak tersedia")) {
+                    pesan = `Validasi Gagal atau Layanan tidak tersedia<br><span class="text-amber-600 dark:text-amber-400 text-base">Coba cek lagi, kalau masih gagal, langsung ke GRUP FD aja ya 🙂</span>`;
+                }
+                resultDiv.innerHTML = `<div class="bg-red-50 dark:bg-red-950 text-red-600 dark:text-red-400 p-14 rounded-3xl text-center text-xl">${pesan}</div>`;
             }
         }
 
