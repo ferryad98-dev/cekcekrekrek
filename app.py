@@ -104,6 +104,9 @@ HTML = """
             <p class="mt-2 text-sm text-amber-600 dark:text-amber-400">
                 Kalau cek pertama gagal, coba lagi, dan kalau masih gagal langsung ke GRUP FD saja ya 🙂
             </p>
+            <p class="mt-2 text-sm text-amber-600 dark:text-amber-400">
+                MEMPERMUDAH BUAT YANG CEK WD SAJA, JANGAN SCREENSHOT DARI SINI KALAU MAU EDIT/GANTI REKENING YA 🙂
+            </p>
         </div>
 
         <div class="flex bg-white dark:bg-slate-800 rounded-3xl p-2 shadow-xl mb-12">
