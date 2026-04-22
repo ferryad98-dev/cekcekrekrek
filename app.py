@@ -51,7 +51,7 @@ def validasi_api(type_val, code, account_number):
     
     return {"status": False, "pesan": "Validasi Gagal atau Layanan tidak tersedia"}
 
-# ================== HTML DENGAN ANIMASI LOADING DI FORM ==================
+# ================== HTML DENGAN FITUR ENTER ==================
 HTML = """
 <!DOCTYPE html>
 <html lang="id">
@@ -64,23 +64,6 @@ HTML = """
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
-
-        .loading-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(255,255,255,0.9);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            border-radius: 1.5rem;
-            z-index: 10;
-        }
-        .dark .loading-overlay {
-            background: rgba(15,23,42,0.95);
-        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-slate-50 to-indigo-50 dark:from-slate-950 dark:to-slate-900 min-h-screen text-gray-900 dark:text-gray-100">
@@ -104,12 +87,12 @@ HTML = """
                 <select id="bank-select" class="w-full p-6 text-lg rounded-2xl border border-slate-200 dark:border-slate-600 focus:border-indigo-500 mb-6"></select>
                 <input id="rek-bank" type="text" placeholder="Nomor Rekening" maxlength="20"
                        class="w-full p-6 text-lg rounded-2xl border border-slate-200 dark:border-slate-600 focus:border-indigo-500" 
-                       oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                       oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                       onkeypress="if(event.key === 'Enter') cek('bank')">
                 <button onclick="cek('bank')" 
                         class="mt-10 w-full py-7 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-semibold text-xl flex items-center justify-center gap-3 transition-all">🔎 CEK REKENING</button>
             </div>
-            <!-- Loading Overlay -->
-            <div id="loading-bank" class="loading-overlay">
+            <div id="loading-bank" class="loading-overlay hidden">
                 <div class="flex flex-col items-center">
                     <div class="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
                     <p class="mt-4 text-slate-600 dark:text-slate-400 font-medium">Sedang memvalidasi...</p>
@@ -123,12 +106,12 @@ HTML = """
                 <select id="ewallet-select" class="w-full p-6 text-lg rounded-2xl border border-slate-200 dark:border-slate-600 focus:border-indigo-500 mb-6"></select>
                 <input id="rek-ewallet" type="text" placeholder="Nomor HP / ID E-Wallet" maxlength="20"
                        class="w-full p-6 text-lg rounded-2xl border border-slate-200 dark:border-slate-600 focus:border-indigo-500" 
-                       oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                       oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                       onkeypress="if(event.key === 'Enter') cek('ewallet')">
                 <button onclick="cek('ewallet')" 
                         class="mt-10 w-full py-7 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-semibold text-xl flex items-center justify-center gap-3 transition-all">🔎 CEK E-WALLET</button>
             </div>
-            <!-- Loading Overlay -->
-            <div id="loading-ewallet" class="loading-overlay">
+            <div id="loading-ewallet" class="loading-overlay hidden">
                 <div class="flex flex-col items-center">
                     <div class="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
                     <p class="mt-4 text-slate-600 dark:text-slate-400 font-medium">Sedang memvalidasi...</p>
@@ -163,15 +146,14 @@ HTML = """
         }
 
         function showLoading(jenis) {
-            document.getElementById(`loading-${jenis}`).style.display = 'flex';
+            document.getElementById(`loading-${jenis}`).classList.remove('hidden');
         }
 
         function hideLoading(jenis) {
-            document.getElementById(`loading-${jenis}`).style.display = 'none';
+            document.getElementById(`loading-${jenis}`).classList.add('hidden');
         }
 
         async function cek(jenis) {
-            const loadingId = `loading-${jenis}`;
             showLoading(jenis);
 
             let code = jenis === 'bank' ? document.getElementById('bank-select').value : document.getElementById('ewallet-select').value;
