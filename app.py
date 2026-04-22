@@ -26,6 +26,8 @@ def clean_number(raw):
     nomor = raw.strip()
     nomor = nomor.replace("-", "").replace(" ", "").replace(".", "").replace(",", "")
     nomor = nomor.replace("_", "").replace("/", "").replace("\\", "")
+    # Hanya ambil angka
+    nomor = ''.join(filter(str.isdigit, nomor))
     return nomor
 
 def validasi_api(type_val, code, account_number):
@@ -52,7 +54,7 @@ def validasi_api(type_val, code, account_number):
     
     return {"status": False, "pesan": "Validasi Gagal atau Layanan tidak tersedia"}
 
-# ================== HTML DENGAN HASIL VALIDASI YANG DIRAPIKAN ==================
+# ================== HTML DENGAN FILTER ANGKA ==================
 HTML = """
 <!DOCTYPE html>
 <html lang="id">
@@ -82,7 +84,9 @@ HTML = """
         <div id="form-bank">
             <div class="bg-white dark:bg-slate-800 rounded-3xl p-8 shadow-2xl">
                 <select id="bank-select" class="w-full p-6 text-lg rounded-2xl border border-gray-200 dark:border-slate-700 focus:border-indigo-500 focus:outline-none mb-6"></select>
-                <input id="rek-bank" type="text" placeholder="Nomor Rekening" class="w-full p-6 text-lg rounded-2xl border border-gray-200 dark:border-slate-700 focus:border-indigo-500">
+                <input id="rek-bank" type="text" placeholder="Nomor Rekening" maxlength="20"
+                       class="w-full p-6 text-lg rounded-2xl border border-gray-200 dark:border-slate-700 focus:border-indigo-500" 
+                       oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                 <button onclick="cek('bank')" class="mt-8 w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 py-7 rounded-2xl text-white font-semibold text-xl flex items-center justify-center gap-3 transition-all">🔎 CEK REKENING</button>
             </div>
         </div>
@@ -90,7 +94,9 @@ HTML = """
         <div id="form-ewallet" class="hidden">
             <div class="bg-white dark:bg-slate-800 rounded-3xl p-8 shadow-2xl">
                 <select id="ewallet-select" class="w-full p-6 text-lg rounded-2xl border border-gray-200 dark:border-slate-700 focus:border-indigo-500 focus:outline-none mb-6"></select>
-                <input id="rek-ewallet" type="text" placeholder="Nomor HP / ID E-Wallet" class="w-full p-6 text-lg rounded-2xl border border-gray-200 dark:border-slate-700 focus:border-indigo-500">
+                <input id="rek-ewallet" type="text" placeholder="Nomor HP / ID E-Wallet" maxlength="20"
+                       class="w-full p-6 text-lg rounded-2xl border border-gray-200 dark:border-slate-700 focus:border-indigo-500" 
+                       oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                 <button onclick="cek('ewallet')" class="mt-8 w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 py-7 rounded-2xl text-white font-semibold text-xl flex items-center justify-center gap-3 transition-all">🔎 CEK E-WALLET</button>
             </div>
         </div>
@@ -183,18 +189,16 @@ HTML = """
                             <p class="text-emerald-600 dark:text-emerald-300">${label} • ${entityName}</p>
                         </div>
                     </div>
-                    
                     <div class="space-y-6">
                         <div class="flex justify-between items-center py-3 border-b border-gray-100 dark:border-slate-700">
                             <span class="text-gray-500">Nama</span>
-                            <span class="font-semibold text-right">${d.account_name}</span>
+                            <span class="font-semibold">${d.account_name}</span>
                         </div>
                         <div class="flex justify-between items-center py-3">
                             <span class="text-gray-500">Nomor</span>
-                            <span class="font-semibold text-right">${d.account_number}</span>
+                            <span class="font-semibold">${d.account_number}</span>
                         </div>
                     </div>
-
                     <button onclick="copyToClipboard('${d.account_name}')" 
                             class="mt-10 w-full py-6 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-semibold flex items-center justify-center gap-3 transition-all">
                         <i class="fas fa-copy"></i> Copy Nama
