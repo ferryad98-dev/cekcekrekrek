@@ -51,7 +51,7 @@ def validasi_api(type_val, code, account_number):
     
     return {"status": False, "pesan": "Validasi Gagal atau Layanan tidak tersedia"}
 
-# ================== HTML LENGKAP & RAPI ==================
+# ================== HTML DENGAN ANIMASI LOADING YANG DIPERBAIKI ==================
 HTML = """
 <!DOCTYPE html>
 <html lang="id">
@@ -67,13 +67,16 @@ HTML = """
 
         .loading-overlay {
             position: absolute;
-            inset: 0;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
             background: rgba(255,255,255,0.95);
             display: none;
             align-items: center;
             justify-content: center;
             border-radius: 1.5rem;
-            z-index: 20;
+            z-index: 30;
             flex-direction: column;
             gap: 16px;
         }
@@ -81,10 +84,10 @@ HTML = """
             background: rgba(15, 23, 42, 0.95);
         }
         .spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid #e5e7eb;
-            border-top: 5px solid #6366f1;
+            width: 52px;
+            height: 52px;
+            border: 6px solid #e5e7eb;
+            border-top: 6px solid #6366f1;
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -169,11 +172,13 @@ HTML = """
         }
 
         function showLoading(jenis) {
-            document.getElementById(`loading-${jenis}`).classList.remove('hidden');
+            const loadingEl = document.getElementById(`loading-${jenis}`);
+            if (loadingEl) loadingEl.style.display = 'flex';
         }
 
         function hideLoading(jenis) {
-            document.getElementById(`loading-${jenis}`).classList.add('hidden');
+            const loadingEl = document.getElementById(`loading-${jenis}`);
+            if (loadingEl) loadingEl.style.display = 'none';
         }
 
         async function cek(jenis) {
