@@ -51,7 +51,7 @@ def validasi_api(type_val, code, account_number):
     
     return {"status": False, "pesan": "Validasi Gagal atau Layanan tidak tersedia"}
 
-# ================== HTML DENGAN TEKS TAMBAHAN ==================
+# ================== HTML DENGAN ANIMASI LOADING DI FORM ==================
 HTML = """
 <!DOCTYPE html>
 <html lang="id">
@@ -64,11 +64,28 @@ HTML = """
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
+
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255,255,255,0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            border-radius: 1.5rem;
+            z-index: 10;
+        }
+        .dark .loading-overlay {
+            background: rgba(15,23,42,0.95);
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-slate-50 to-indigo-50 dark:from-slate-950 dark:to-slate-900 min-h-screen text-gray-900 dark:text-gray-100">
     <div class="max-w-2xl mx-auto pt-12 px-6">
-        <div class="text-center mb-10">
+        <div class="text-center mb-12">
             <h1 class="text-6xl font-bold tracking-tighter bg-gradient-to-r from-indigo-600 via-purple-600 to-violet-600 bg-clip-text text-transparent">CEK CEK REK</h1>
             <p class="mt-4 text-xl text-slate-600 dark:text-slate-400">Validasi rekening & e-wallet cepat dan aman</p>
             <p class="mt-2 text-sm text-amber-600 dark:text-amber-400">
@@ -81,7 +98,8 @@ HTML = """
             <button onclick="switchTab(1)" id="tab1" class="flex-1 py-5 text-lg font-semibold rounded-3xl transition-all flex items-center justify-center gap-3">💳 E-Wallet</button>
         </div>
 
-        <div id="form-bank">
+        <!-- Form Bank -->
+        <div id="form-bank" class="relative">
             <div class="bg-white dark:bg-slate-800 rounded-3xl p-10 shadow-2xl border border-white/70 dark:border-slate-700">
                 <select id="bank-select" class="w-full p-6 text-lg rounded-2xl border border-slate-200 dark:border-slate-600 focus:border-indigo-500 mb-6"></select>
                 <input id="rek-bank" type="text" placeholder="Nomor Rekening" maxlength="20"
@@ -90,9 +108,17 @@ HTML = """
                 <button onclick="cek('bank')" 
                         class="mt-10 w-full py-7 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-semibold text-xl flex items-center justify-center gap-3 transition-all">🔎 CEK REKENING</button>
             </div>
+            <!-- Loading Overlay -->
+            <div id="loading-bank" class="loading-overlay">
+                <div class="flex flex-col items-center">
+                    <div class="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
+                    <p class="mt-4 text-slate-600 dark:text-slate-400 font-medium">Sedang memvalidasi...</p>
+                </div>
+            </div>
         </div>
 
-        <div id="form-ewallet" class="hidden">
+        <!-- Form E-Wallet -->
+        <div id="form-ewallet" class="relative hidden">
             <div class="bg-white dark:bg-slate-800 rounded-3xl p-10 shadow-2xl border border-white/70 dark:border-slate-700">
                 <select id="ewallet-select" class="w-full p-6 text-lg rounded-2xl border border-slate-200 dark:border-slate-600 focus:border-indigo-500 mb-6"></select>
                 <input id="rek-ewallet" type="text" placeholder="Nomor HP / ID E-Wallet" maxlength="20"
@@ -100,6 +126,13 @@ HTML = """
                        oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                 <button onclick="cek('ewallet')" 
                         class="mt-10 w-full py-7 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-semibold text-xl flex items-center justify-center gap-3 transition-all">🔎 CEK E-WALLET</button>
+            </div>
+            <!-- Loading Overlay -->
+            <div id="loading-ewallet" class="loading-overlay">
+                <div class="flex flex-col items-center">
+                    <div class="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
+                    <p class="mt-4 text-slate-600 dark:text-slate-400 font-medium">Sedang memvalidasi...</p>
+                </div>
             </div>
         </div>
 
@@ -129,39 +162,17 @@ HTML = """
             document.getElementById('form-ewallet').classList.toggle('hidden', n!==1);
         }
 
-        function saveToHistory(jenis, entity, nama, nomor) {
-            let history = JSON.parse(localStorage.getItem('cekrek_history') || '[]');
-            history.unshift({ jenis, entity, nama, nomor, time: new Date().toLocaleTimeString('id-ID',{hour:'2-digit', minute:'2-digit'}) });
-            if (history.length > 5) history.pop();
-            localStorage.setItem('cekrek_history', JSON.stringify(history));
-            renderHistory();
+        function showLoading(jenis) {
+            document.getElementById(`loading-${jenis}`).style.display = 'flex';
         }
 
-        function renderHistory() {
-            const div = document.getElementById('history');
-            const history = JSON.parse(localStorage.getItem('cekrek_history') || '[]');
-            if (history.length === 0) {
-                div.innerHTML = `<p class="text-center text-slate-400 py-12">Belum ada riwayat cek</p>`;
-                return;
-            }
-            div.innerHTML = history.map(h => `
-                <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-white/50 dark:border-slate-700">
-                    <div class="flex justify-between">
-                        <div>
-                            <span class="text-xs uppercase tracking-widest text-indigo-500">${h.jenis} • ${h.entity}</span>
-                            <p class="font-medium mt-2">${h.nama}</p>
-                            <p class="text-slate-500">${h.nomor}</p>
-                        </div>
-                        <span class="text-xs text-slate-400">${h.time}</span>
-                    </div>
-                </div>
-            `).join('');
+        function hideLoading(jenis) {
+            document.getElementById(`loading-${jenis}`).style.display = 'none';
         }
 
         async function cek(jenis) {
-            const resultDiv = document.getElementById('result');
-            resultDiv.classList.remove('hidden');
-            resultDiv.innerHTML = `<div class="text-center py-24"><i class="fas fa-spinner fa-spin text-6xl text-indigo-500"></i><p class="mt-8 text-xl">Memvalidasi data...</p></div>`;
+            const loadingId = `loading-${jenis}`;
+            showLoading(jenis);
 
             let code = jenis === 'bank' ? document.getElementById('bank-select').value : document.getElementById('ewallet-select').value;
             let account_number = (jenis === 'bank' ? document.getElementById('rek-bank') : document.getElementById('rek-ewallet')).value.trim();
@@ -174,6 +185,11 @@ HTML = """
                 body: JSON.stringify({type: jenis, code: code, account_number: account_number})
             });
             const data = await res.json();
+
+            hideLoading(jenis);
+
+            const resultDiv = document.getElementById('result');
+            resultDiv.classList.remove('hidden');
 
             if (data.status === true) {
                 const d = data.data;
@@ -219,6 +235,35 @@ HTML = """
                     setTimeout(() => b.innerHTML = original, 2000);
                 }
             });
+        }
+
+        function saveToHistory(jenis, entity, nama, nomor) {
+            let history = JSON.parse(localStorage.getItem('cekrek_history') || '[]');
+            history.unshift({ jenis, entity, nama, nomor, time: new Date().toLocaleTimeString('id-ID',{hour:'2-digit', minute:'2-digit'}) });
+            if (history.length > 5) history.pop();
+            localStorage.setItem('cekrek_history', JSON.stringify(history));
+            renderHistory();
+        }
+
+        function renderHistory() {
+            const div = document.getElementById('history');
+            const history = JSON.parse(localStorage.getItem('cekrek_history') || '[]');
+            if (history.length === 0) {
+                div.innerHTML = `<p class="text-center text-slate-400 py-12">Belum ada riwayat cek</p>`;
+                return;
+            }
+            div.innerHTML = history.map(h => `
+                <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-white/50 dark:border-slate-700">
+                    <div class="flex justify-between">
+                        <div>
+                            <span class="text-xs uppercase tracking-widest text-indigo-500">${h.jenis} • ${h.entity}</span>
+                            <p class="font-medium mt-2">${h.nama}</p>
+                            <p class="text-slate-500">${h.nomor}</p>
+                        </div>
+                        <span class="text-xs text-slate-400">${h.time}</span>
+                    </div>
+                </div>
+            `).join('');
         }
 
         window.onload = () => {
