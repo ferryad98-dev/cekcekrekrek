@@ -51,7 +51,7 @@ def validasi_api(type_val, code, account_number):
     
     return {"status": False, "pesan": "Validasi Gagal atau Layanan tidak tersedia"}
 
-# ================== HTML UI LEBIH ELEGANT ==================
+# ================== HTML + ANIMASI LEBIH HALUS ==================
 HTML = """
 <!DOCTYPE html>
 <html lang="id">
@@ -62,30 +62,47 @@ HTML = """
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
-        .title { font-family: 'Playfair Display', serif; }
-        .glass {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(20px);
+
+        .tab-content {
+            transition: all 0.5s cubic-bezier(0.4, 0.0, 0.2, 1);
+            opacity: 1;
+            transform: translateY(0);
         }
-        .dark .glass {
-            background: rgba(15, 23, 42, 0.85);
+        .tab-content.hidden {
+            opacity: 0;
+            transform: translateY(30px);
+            pointer-events: none;
+        }
+
+        .form-card {
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .result-card {
+            animation: resultPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes resultPop {
+            0% { opacity: 0; transform: scale(0.85) translateY(40px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        input:focus, select:focus {
+            box-shadow: 0 0 0 5px rgba(129, 140, 248, 0.25);
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-zinc-100 to-slate-200 dark:from-zinc-950 dark:to-slate-900 min-h-screen">
+<body class="bg-gradient-to-br from-slate-100 to-indigo-100 dark:from-slate-950 dark:to-slate-900 min-h-screen">
     <div class="max-w-2xl mx-auto pt-16 px-6">
-        <!-- Header -->
         <div class="text-center mb-14">
-            <h1 class="title text-7xl font-bold tracking-tighter bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600 bg-clip-text text-transparent">
-                CEK CEK REK
-            </h1>
-            <p class="mt-4 text-xl text-slate-600 dark:text-slate-400">Validasi rekening & e-wallet cepat, aman, dan akurat</p>
+            <h1 class="text-7xl font-bold tracking-tighter bg-gradient-to-r from-indigo-600 via-violet-600 to-purple-600 bg-clip-text text-transparent">CEK CEK REK</h1>
+            <p class="mt-4 text-xl text-slate-600 dark:text-slate-400">Validasi rekening & e-wallet cepat dan aman</p>
         </div>
 
         <!-- Tabs -->
-        <div class="flex bg-white dark:bg-slate-800 rounded-3xl p-2 shadow-xl mb-12">
+        <div class="flex bg-white dark:bg-slate-800 rounded-3xl p-2 shadow-2xl mb-12">
             <button onclick="switchTab(0)" id="tab0" 
                     class="flex-1 py-5 text-lg font-semibold rounded-3xl transition-all flex items-center justify-center gap-3">🏦 Bank</button>
             <button onclick="switchTab(1)" id="tab1" 
@@ -93,8 +110,8 @@ HTML = """
         </div>
 
         <!-- Form Bank -->
-        <div id="form-bank" class="tab-content">
-            <div class="glass rounded-3xl p-10 shadow-2xl border border-white/60 dark:border-slate-700">
+        <div id="form-bank" class="tab-content form-card">
+            <div class="bg-white dark:bg-slate-800 rounded-3xl p-10 shadow-2xl border border-white/70 dark:border-slate-700">
                 <select id="bank-select" class="w-full p-6 text-lg rounded-2xl border border-slate-200 dark:border-slate-600 focus:border-indigo-500 mb-6"></select>
                 <input id="rek-bank" type="text" placeholder="Nomor Rekening" maxlength="20"
                        class="w-full p-6 text-lg rounded-2xl border border-slate-200 dark:border-slate-600 focus:border-indigo-500" 
@@ -107,8 +124,8 @@ HTML = """
         </div>
 
         <!-- Form E-Wallet -->
-        <div id="form-ewallet" class="tab-content hidden">
-            <div class="glass rounded-3xl p-10 shadow-2xl border border-white/60 dark:border-slate-700">
+        <div id="form-ewallet" class="tab-content form-card hidden">
+            <div class="bg-white dark:bg-slate-800 rounded-3xl p-10 shadow-2xl border border-white/70 dark:border-slate-700">
                 <select id="ewallet-select" class="w-full p-6 text-lg rounded-2xl border border-slate-200 dark:border-slate-600 focus:border-indigo-500 mb-6"></select>
                 <input id="rek-ewallet" type="text" placeholder="Nomor HP / ID E-Wallet" maxlength="20"
                        class="w-full p-6 text-lg rounded-2xl border border-slate-200 dark:border-slate-600 focus:border-indigo-500" 
@@ -123,15 +140,13 @@ HTML = """
         <div id="result" class="mt-12 hidden"></div>
 
         <div class="mt-20">
-            <h3 class="font-semibold text-xl mb-6 flex items-center gap-3 text-slate-700 dark:text-slate-300">
-                <i class="fas fa-history"></i> Riwayat Cek Terakhir
-            </h3>
+            <h3 class="font-semibold text-xl mb-6 flex items-center gap-3"><i class="fas fa-history"></i> Riwayat Cek Terakhir</h3>
             <div id="history" class="space-y-4"></div>
         </div>
     </div>
 
     <script>
-        // Dropdown
+        // Isi dropdown
         {% for nama, kode in bank_list.items() %}
             document.getElementById('bank-select').innerHTML += `<option value="{{kode}}">{{nama}}</option>`;
         {% endfor %}
@@ -140,16 +155,23 @@ HTML = """
         {% endfor %}
 
         function switchTab(n) {
+            const bankForm = document.getElementById('form-bank');
+            const ewalletForm = document.getElementById('form-ewallet');
+
+            if (n === 0) {
+                bankForm.classList.remove('hidden');
+                ewalletForm.classList.add('hidden');
+            } else {
+                ewalletForm.classList.remove('hidden');
+                bankForm.classList.add('hidden');
+            }
+
             document.getElementById('tab0').classList.toggle('bg-white', n === 0);
             document.getElementById('tab0').classList.toggle('shadow-md', n === 0);
             document.getElementById('tab1').classList.toggle('bg-white', n === 1);
             document.getElementById('tab1').classList.toggle('shadow-md', n === 1);
-            
-            document.getElementById('form-bank').classList.toggle('hidden', n !== 0);
-            document.getElementById('form-ewallet').classList.toggle('hidden', n !== 1);
         }
 
-        // History functions (sama seperti sebelumnya)
         function saveToHistory(jenis, entity, nama, nomor) {
             let history = JSON.parse(localStorage.getItem('cekrek_history') || '[]');
             history.unshift({ jenis, entity, nama, nomor, time: new Date().toLocaleTimeString('id-ID',{hour:'2-digit', minute:'2-digit'}) });
@@ -162,11 +184,11 @@ HTML = """
             const div = document.getElementById('history');
             const history = JSON.parse(localStorage.getItem('cekrek_history') || '[]');
             if (history.length === 0) {
-                div.innerHTML = `<p class="text-center text-slate-400 py-12">Belum ada riwayat</p>`;
+                div.innerHTML = `<p class="text-center text-slate-400 py-12">Belum ada riwayat cek</p>`;
                 return;
             }
             div.innerHTML = history.map(h => `
-                <div class="glass rounded-2xl p-6 border border-white/50 dark:border-slate-700">
+                <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-white/50 dark:border-slate-700">
                     <div class="flex justify-between">
                         <div>
                             <span class="text-xs uppercase tracking-widest text-indigo-500">${h.jenis} • ${h.entity}</span>
@@ -182,7 +204,7 @@ HTML = """
         async function cek(jenis) {
             const resultDiv = document.getElementById('result');
             resultDiv.classList.remove('hidden');
-            resultDiv.innerHTML = `<div class="text-center py-24"><i class="fas fa-spinner fa-spin text-6xl text-indigo-500"></i><p class="mt-8 text-xl">Sedang memvalidasi...</p></div>`;
+            resultDiv.innerHTML = `<div class="text-center py-24"><i class="fas fa-spinner fa-spin text-6xl text-indigo-500"></i><p class="mt-8 text-xl">Memvalidasi data...</p></div>`;
 
             let code = jenis === 'bank' ? document.getElementById('bank-select').value : document.getElementById('ewallet-select').value;
             let account_number = (jenis === 'bank' ? document.getElementById('rek-bank') : document.getElementById('rek-ewallet')).value.trim();
@@ -200,34 +222,34 @@ HTML = """
                 const d = data.data;
                 const label = jenis === 'bank' ? 'Bank' : 'E-Wallet';
                 resultDiv.innerHTML = `
-                <div class="glass rounded-3xl p-10 shadow-2xl border border-white/60 dark:border-slate-700">
-                    <div class="flex gap-6 mb-10">
-                        <div class="flex-shrink-0 w-20 h-20 bg-emerald-100 dark:bg-emerald-900 rounded-3xl flex items-center justify-center">
+                <div class="result-card bg-white dark:bg-slate-800 rounded-3xl p-10 shadow-2xl border border-white/70 dark:border-slate-700">
+                    <div class="flex items-center gap-6 mb-10">
+                        <div class="w-20 h-20 bg-emerald-100 dark:bg-emerald-900/50 rounded-3xl flex items-center justify-center flex-shrink-0">
                             <i class="fas fa-check-circle text-6xl text-emerald-500"></i>
                         </div>
-                        <div class="pt-2">
+                        <div>
                             <h2 class="text-4xl font-bold text-emerald-700 dark:text-emerald-400">Validasi Berhasil</h2>
                             <p class="text-emerald-600 dark:text-emerald-300 text-lg">${label} • ${entityName}</p>
                         </div>
                     </div>
-                    <div class="grid grid-cols-1 gap-8 text-lg">
-                        <div class="flex justify-between border-b border-slate-200 dark:border-slate-700 pb-5">
+                    <div class="space-y-8 text-lg">
+                        <div class="flex justify-between pb-4 border-b border-slate-200 dark:border-slate-700">
                             <span class="text-slate-500">Nama</span>
-                            <span class="font-semibold text-right">${d.account_name}</span>
+                            <span class="font-semibold">${d.account_name}</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-slate-500">Nomor</span>
-                            <span class="font-semibold text-right">${d.account_number}</span>
+                            <span class="font-semibold">${d.account_number}</span>
                         </div>
                     </div>
                     <button onclick="copyToClipboard('${d.account_name}')" 
-                            class="mt-12 w-full py-7 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-lg flex items-center justify-center gap-3 transition-all">
+                            class="mt-12 w-full py-7 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-semibold flex items-center justify-center gap-3 transition-all">
                         <i class="fas fa-copy"></i> Copy Nama
                     </button>
                 </div>`;
                 saveToHistory(jenis, entityName, d.account_name, d.account_number);
             } else {
-                resultDiv.innerHTML = `<div class="glass rounded-3xl p-14 text-center text-red-500 text-xl">${data.pesan}</div>`;
+                resultDiv.innerHTML = `<div class="bg-red-50 dark:bg-red-950 text-red-600 dark:text-red-400 p-14 rounded-3xl text-center text-xl">${data.pesan}</div>`;
             }
         }
 
@@ -237,7 +259,7 @@ HTML = """
                 for (let b of btns) if (b.textContent.includes('Copy')) {
                     const original = b.innerHTML;
                     b.innerHTML = '✅ Tersalin!';
-                    setTimeout(() => b.innerHTML = original, 1800);
+                    setTimeout(() => b.innerHTML = original, 2000);
                 }
             });
         }
