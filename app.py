@@ -51,7 +51,7 @@ def validasi_api(type_val, code, account_number):
     
     return {"status": False, "pesan": "Validasi Gagal atau Layanan tidak tersedia"}
 
-# ================== HTML DENGAN PESAN ERROR YANG DITINGKATKAN ==================
+# ================== HTML DENGAN PESAN ERROR YANG DIPERBARUI ==================
 HTML = """
 <!DOCTYPE html>
 <html lang="id">
@@ -202,9 +202,13 @@ HTML = """
                 </div>`;
                 saveToHistory(jenis, entityName, d.account_name, d.account_number);
             } else {
-                let pesan = data.pesan;
-                if (pesan.includes("Validasi Gagal atau Layanan tidak tersedia")) {
-                    pesan = `Validasi Gagal atau Layanan tidak tersedia<br><span class="text-amber-600 dark:text-amber-400 text-base">Coba cek lagi, kalau masih gagal, langsung ke GRUP FD aja ya 🙂</span>`;
+                let pesan = data.pesan || "Terjadi kesalahan";
+                if (pesan.includes("Validasi Gagal atau Layanan tidak tersedia") || pesan.includes("Gagal validasi")) {
+                    pesan = `
+                        Validasi Gagal atau Layanan tidak tersedia<br>
+                        Coba cek lagi, kalau masih gagal, langsung ke GRUP FD aja ya 🙂<br><br>
+                        <span class="text-rose-600 dark:text-rose-400 font-bold italic">*PASTIKAN JENIS REKENINGNYA SUDAH SESUAI*</span>
+                    `;
                 }
                 resultDiv.innerHTML = `<div class="bg-red-50 dark:bg-red-950 text-red-600 dark:text-red-400 p-14 rounded-3xl text-center text-xl">${pesan}</div>`;
             }
