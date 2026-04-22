@@ -51,7 +51,7 @@ def validasi_api(type_val, code, account_number):
     
     return {"status": False, "pesan": "Validasi Gagal atau Layanan tidak tersedia"}
 
-# ================== HTML + ANIMASI LEBIH HALUS ==================
+# ================== HTML DENGAN TEKS TAMBAHAN ==================
 HTML = """
 <!DOCTYPE html>
 <html lang="id">
@@ -64,76 +64,42 @@ HTML = """
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
-
-        .tab-content {
-            transition: all 0.5s cubic-bezier(0.4, 0.0, 0.2, 1);
-            opacity: 1;
-            transform: translateY(0);
-        }
-        .tab-content.hidden {
-            opacity: 0;
-            transform: translateY(30px);
-            pointer-events: none;
-        }
-
-        .form-card {
-            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
-        .result-card {
-            animation: resultPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
-        @keyframes resultPop {
-            0% { opacity: 0; transform: scale(0.85) translateY(40px); }
-            100% { opacity: 1; transform: scale(1) translateY(0); }
-        }
-
-        input:focus, select:focus {
-            box-shadow: 0 0 0 5px rgba(129, 140, 248, 0.25);
-        }
     </style>
 </head>
-<body class="bg-gradient-to-br from-slate-100 to-indigo-100 dark:from-slate-950 dark:to-slate-900 min-h-screen">
-    <div class="max-w-2xl mx-auto pt-16 px-6">
-        <div class="text-center mb-14">
-            <h1 class="text-7xl font-bold tracking-tighter bg-gradient-to-r from-indigo-600 via-violet-600 to-purple-600 bg-clip-text text-transparent">CEK CEK REK</h1>
+<body class="bg-gradient-to-br from-slate-50 to-indigo-50 dark:from-slate-950 dark:to-slate-900 min-h-screen text-gray-900 dark:text-gray-100">
+    <div class="max-w-2xl mx-auto pt-12 px-6">
+        <div class="text-center mb-10">
+            <h1 class="text-6xl font-bold tracking-tighter bg-gradient-to-r from-indigo-600 via-purple-600 to-violet-600 bg-clip-text text-transparent">CEK CEK REK</h1>
             <p class="mt-4 text-xl text-slate-600 dark:text-slate-400">Validasi rekening & e-wallet cepat dan aman</p>
+            <p class="mt-2 text-sm text-amber-600 dark:text-amber-400">
+                Kalau cek pertama gagal, coba lagi, dan kalau masih gagal langsung ke GRUP FD saja ya 🙂
+            </p>
         </div>
 
-        <!-- Tabs -->
-        <div class="flex bg-white dark:bg-slate-800 rounded-3xl p-2 shadow-2xl mb-12">
-            <button onclick="switchTab(0)" id="tab0" 
-                    class="flex-1 py-5 text-lg font-semibold rounded-3xl transition-all flex items-center justify-center gap-3">🏦 Bank</button>
-            <button onclick="switchTab(1)" id="tab1" 
-                    class="flex-1 py-5 text-lg font-semibold rounded-3xl transition-all flex items-center justify-center gap-3">💳 E-Wallet</button>
+        <div class="flex bg-white dark:bg-slate-800 rounded-3xl p-2 shadow-xl mb-12">
+            <button onclick="switchTab(0)" id="tab0" class="flex-1 py-5 text-lg font-semibold rounded-3xl transition-all flex items-center justify-center gap-3">🏦 Bank</button>
+            <button onclick="switchTab(1)" id="tab1" class="flex-1 py-5 text-lg font-semibold rounded-3xl transition-all flex items-center justify-center gap-3">💳 E-Wallet</button>
         </div>
 
-        <!-- Form Bank -->
-        <div id="form-bank" class="tab-content form-card">
+        <div id="form-bank">
             <div class="bg-white dark:bg-slate-800 rounded-3xl p-10 shadow-2xl border border-white/70 dark:border-slate-700">
                 <select id="bank-select" class="w-full p-6 text-lg rounded-2xl border border-slate-200 dark:border-slate-600 focus:border-indigo-500 mb-6"></select>
                 <input id="rek-bank" type="text" placeholder="Nomor Rekening" maxlength="20"
                        class="w-full p-6 text-lg rounded-2xl border border-slate-200 dark:border-slate-600 focus:border-indigo-500" 
                        oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                 <button onclick="cek('bank')" 
-                        class="mt-10 w-full py-7 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-semibold text-xl flex items-center justify-center gap-3 hover:brightness-110 transition-all">
-                    <i class="fas fa-search"></i> CEK REKENING
-                </button>
+                        class="mt-10 w-full py-7 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-semibold text-xl flex items-center justify-center gap-3 transition-all">🔎 CEK REKENING</button>
             </div>
         </div>
 
-        <!-- Form E-Wallet -->
-        <div id="form-ewallet" class="tab-content form-card hidden">
+        <div id="form-ewallet" class="hidden">
             <div class="bg-white dark:bg-slate-800 rounded-3xl p-10 shadow-2xl border border-white/70 dark:border-slate-700">
                 <select id="ewallet-select" class="w-full p-6 text-lg rounded-2xl border border-slate-200 dark:border-slate-600 focus:border-indigo-500 mb-6"></select>
                 <input id="rek-ewallet" type="text" placeholder="Nomor HP / ID E-Wallet" maxlength="20"
                        class="w-full p-6 text-lg rounded-2xl border border-slate-200 dark:border-slate-600 focus:border-indigo-500" 
                        oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                 <button onclick="cek('ewallet')" 
-                        class="mt-10 w-full py-7 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-semibold text-xl flex items-center justify-center gap-3 hover:brightness-110 transition-all">
-                    <i class="fas fa-search"></i> CEK E-WALLET
-                </button>
+                        class="mt-10 w-full py-7 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-semibold text-xl flex items-center justify-center gap-3 transition-all">🔎 CEK E-WALLET</button>
             </div>
         </div>
 
@@ -155,21 +121,12 @@ HTML = """
         {% endfor %}
 
         function switchTab(n) {
-            const bankForm = document.getElementById('form-bank');
-            const ewalletForm = document.getElementById('form-ewallet');
-
-            if (n === 0) {
-                bankForm.classList.remove('hidden');
-                ewalletForm.classList.add('hidden');
-            } else {
-                ewalletForm.classList.remove('hidden');
-                bankForm.classList.add('hidden');
-            }
-
-            document.getElementById('tab0').classList.toggle('bg-white', n === 0);
-            document.getElementById('tab0').classList.toggle('shadow-md', n === 0);
-            document.getElementById('tab1').classList.toggle('bg-white', n === 1);
-            document.getElementById('tab1').classList.toggle('shadow-md', n === 1);
+            document.getElementById('tab0').classList.toggle('bg-white', n===0);
+            document.getElementById('tab0').classList.toggle('shadow-md', n===0);
+            document.getElementById('tab1').classList.toggle('bg-white', n===1);
+            document.getElementById('tab1').classList.toggle('shadow-md', n===1);
+            document.getElementById('form-bank').classList.toggle('hidden', n!==0);
+            document.getElementById('form-ewallet').classList.toggle('hidden', n!==1);
         }
 
         function saveToHistory(jenis, entity, nama, nomor) {
@@ -222,14 +179,14 @@ HTML = """
                 const d = data.data;
                 const label = jenis === 'bank' ? 'Bank' : 'E-Wallet';
                 resultDiv.innerHTML = `
-                <div class="result-card bg-white dark:bg-slate-800 rounded-3xl p-10 shadow-2xl border border-white/70 dark:border-slate-700">
-                    <div class="flex items-center gap-6 mb-10">
-                        <div class="w-20 h-20 bg-emerald-100 dark:bg-emerald-900/50 rounded-3xl flex items-center justify-center flex-shrink-0">
+                <div class="bg-white dark:bg-slate-800 rounded-3xl p-10 shadow-2xl border border-white/70 dark:border-slate-700">
+                    <div class="flex items-center gap-6 mb-8">
+                        <div class="w-20 h-20 bg-emerald-100 dark:bg-emerald-900/50 rounded-3xl flex items-center justify-center">
                             <i class="fas fa-check-circle text-6xl text-emerald-500"></i>
                         </div>
                         <div>
                             <h2 class="text-4xl font-bold text-emerald-700 dark:text-emerald-400">Validasi Berhasil</h2>
-                            <p class="text-emerald-600 dark:text-emerald-300 text-lg">${label} • ${entityName}</p>
+                            <p class="text-emerald-600 dark:text-emerald-300">${label} • ${entityName}</p>
                         </div>
                     </div>
                     <div class="space-y-8 text-lg">
