@@ -102,9 +102,6 @@ HTML = """
             <h1 class="text-6xl font-bold tracking-tighter bg-gradient-to-r from-indigo-600 via-purple-600 to-violet-600 bg-clip-text text-transparent">CEK CEK REK</h1>
             <p class="mt-4 text-xl text-slate-600 dark:text-slate-400">Validasi rekening & e-wallet cepat dan aman</p>
             <p class="mt-2 text-sm text-amber-600 dark:text-amber-400">
-                Kalau cek pertama gagal, coba lagi, dan kalau masih gagal langsung ke GRUP FD saja ya 🙂
-            </p>
-            <p class="mt-2 text-sm text-amber-600 dark:text-amber-400">
                 MEMPERMUDAH BUAT YANG CEK WD SAJA, JANGAN SCREENSHOT DARI SINI KALAU MAU EDIT/GANTI REKENING YA 🙂
             </p>
         </div>
